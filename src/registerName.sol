@@ -9,6 +9,8 @@ pragma solidity ^0.8.0;
 contract PNSRegistry{
 
     mapping(address => string) registryNames;
+    mapping(address => mapping(string => uint256)) expiryDate;
+    mapping(string => bool) activeName;
 
     event RegisterName(address account, string registeredName, uint256 datetimestamp);
     event TransferName(address account, string registeredName , uint256 datetimestamp);
