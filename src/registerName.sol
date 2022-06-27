@@ -17,6 +17,15 @@ contract PNSRegistry{
     event RenewName(address account, string registeredName , uint256 datetimestamp);
     event RevokeName(address account, string registeredName , uint256 datetimestamp);
 
+    /// @notice Thrown when trying to update a name you don't own
+	error Unauthorized();
+
+    /// @notice Thrown when trying to renew a name past due date
+	error PastValidityPeriod();
+
+	/// @notice Thrown when trying to register a name that's already taken
+	error AlreadyRegistered();
+
     /// @author Allan
     /// @notice Explain to an end user what this does
     /// @dev Explain to a developer any extra details
