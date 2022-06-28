@@ -8,14 +8,23 @@ pragma solidity ^0.8.0;
 
 contract PNSRegistry{
 
-    mapping(address => string) registryNames;
-    mapping(address => mapping(string => uint256)) expiryDate;
-    mapping(string => bool) activeName;
+    struct nameRegistry{
+        address owner;
+        bytes32 name;
+        uint registeredDate;
+        bool active;
+    }
 
-    event RegisterName(address account, string registeredName, uint256 datetimestamp);
-    event TransferName(address account, string registeredName , uint256 datetimestamp);
-    event RenewName(address account, string registeredName , uint256 datetimestamp);
-    event RevokeName(address account, string registeredName , uint256 datetimestamp);
+    nameRegistry registry;
+
+    mapping(address => nameRegistry) registryNames;
+    // mapping(address => mapping(string => uint256)) expiryDate;
+    // mapping(string => bool) activeName;
+
+    event RegisterName(address account, bytes32 registeredName, uint256 timestamp);
+    event TransferName(address account, bytes32 registeredName , uint256 timestamp);
+    event RenewName(address account, bytes32 registeredName , uint256 timestamp);
+    event RevokeName(address account, bytes32 registeredName , uint256 timestamp);
 
     /// @notice Thrown when trying to update a name you don't own
 	error Unauthorized();
@@ -31,10 +40,25 @@ contract PNSRegistry{
     /// @dev Explain to a developer any extra details
     constructor(){}
 
-    function register(address account, string memory _registeredName) public view returns (bool){}
-    function verify(address account, string memory _registeredName) public view returns(bool){}
-    function transfer(address account, string memory _registeredName) public view returns(bool){}
-    function renew(address account, string memory _registeredName) public view returns(bool){}
-    function expire(address account, string memory _registeredName) public view returns(bool){}
+    function register(address _account, bytes31 _registeredName, uint256 timestamp) public returns (bool){
+        registry = nameRegistry(_account, _registeredName, block.timestamp, true);
+
+        emit RegisterName(_account, _registeredName, timestamp);
+        return true;
+    }
+
+    function verify(bytes32 _registeredName) public view returns(address, uint256, bool){
+
+        if (_registeredName == registry.name) {
+            return (registry.owner, registry.registeredDate, registry.active);
+        } else {
+            return (registry.owner, registry.registeredDate, registry.active);
+        }
+    }
+
+    function transfer(address account, string memory _registeredName) public returns(bool){}
+    function renew(address account, string memory _registeredName) public returns(bool){}
+    function expire(address account, string memory _registeredName) public returns(bool){}
+    function registryLookup() public returns(bytes32){}
 
 }
