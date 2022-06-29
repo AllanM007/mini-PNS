@@ -82,9 +82,11 @@ contract PNSRegistry{
             return false;
         }
     }
-    function expire(bytes32 _registeredName) public returns(bool){
+    function revoke(bytes32 _registeredName) public returns(bool){
         if (_registeredName == registry.name) {
             registry.active = false;
+
+            event RevokeName(registry.owner, _registeredName , block.timestamp);
             
             return true;   
         } else {
