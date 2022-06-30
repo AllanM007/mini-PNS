@@ -41,7 +41,7 @@ contract PNSRegistry{
     /// @dev Explain to a developer any extra details
     constructor(){}
 
-    function register(address _account, bytes31 _registeredName, uint256 timestamp) public returns (bool){
+    function register(address _account, bytes32 _registeredName, uint256 timestamp) public returns (bool){
 
         if (_registeredName == registry.name) {
             return false;            
@@ -65,7 +65,10 @@ contract PNSRegistry{
     function transfer(address account, address recipient, bytes32 _registeredName) public returns(bool){
         if (_registeredName == registry.name && account == registry.owner) {
             registry.owner = recipient;
-            registry.updateDate = block.timestamp;
+            uint currentTimestamp = block.timestamp;
+            registry.updateDate = currentTimestamp;
+
+            emit TransferName(account, recipient, _registeredName , currentTimestamp);
 
             return true;
         } else {
@@ -77,6 +80,8 @@ contract PNSRegistry{
             require(account == registry.owner, "Unauthorized party");
             registry.updateDate = timestamp;
 
+            emit RenewName(account, _registeredName , timestamp);
+
             return true;   
         } else {
             return false;
@@ -85,8 +90,11 @@ contract PNSRegistry{
     function revoke(bytes32 _registeredName) public returns(bool){
         if (_registeredName == registry.name) {
             registry.active = false;
+            // address owner = registry.owner;
+            uint currentTimestamp = block.timestamp;
+            registry.updateDate = currentTimestamp;
 
-            event RevokeName(registry.owner, _registeredName , block.timestamp);
+            event RevokeName(owner, _registeredName , currentTimestamp);
             
             return true;   
         } else {
