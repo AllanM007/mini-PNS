@@ -19,8 +19,6 @@ contract PNSRegistry{
     nameRegistry registry;
 
     mapping(address => nameRegistry) registryNames;
-    // mapping(address => mapping(string => uint256)) expiryDate;
-    // mapping(string => bool) activeName;
 
     event RegisterName(address account, bytes32 registeredName, uint256 timestamp);
     event TransferName(address account, address recipient, bytes32 registeredName , uint256 timestamp);
@@ -64,6 +62,7 @@ contract PNSRegistry{
 
     function transfer(address account, address recipient, bytes32 _registeredName) public returns(bool){
         if (_registeredName == registry.name && account == registry.owner) {
+            require(account == registry.owner, "Unauthorized party cannot transfer");
             registry.owner = recipient;
             uint currentTimestamp = block.timestamp;
             registry.updateDate = currentTimestamp;
@@ -77,7 +76,7 @@ contract PNSRegistry{
     }
     function renew(address account, bytes32 _registeredName, uint256 timestamp) public returns(bool){
         if (_registeredName == registry.name) {
-            require(account == registry.owner, "Unauthorized party");
+            require(account == registry.owner, "Unauthorized party cannot renew");
             registry.updateDate = timestamp;
 
             emit RenewName(account, _registeredName , timestamp);
@@ -90,17 +89,24 @@ contract PNSRegistry{
     function revoke(bytes32 _registeredName) public returns(bool){
         if (_registeredName == registry.name) {
             registry.active = false;
-            // address owner = registry.owner;
+            address owner = registry.owner;
             uint currentTimestamp = block.timestamp;
             registry.updateDate = currentTimestamp;
 
-            event RevokeName(owner, _registeredName , currentTimestamp);
+            emit RevokeName(owner, _registeredName , currentTimestamp);
             
             return true;   
         } else {
             return false;
         }
     }
-    function registryLookup() public view returns(bytes32){}
+    function addressLookup(address _account) public view returns(bytes32){
+        // return registry;
+        if (_account == registry.owner) {
+            return registry.name;            
+        } else {
+            return bytes32("No address found");
+        }
+    }
 
 }
