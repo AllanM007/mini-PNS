@@ -19,6 +19,7 @@ contract PNSRegistry{
     nameRegistry registry;
 
     mapping(address => nameRegistry) registryNames;
+    // mapping(bytes32 => address) public 
 
     event RegisterName(address account, bytes32 registeredName, uint256 timestamp);
     event TransferName(address account, address recipient, bytes32 registeredName , uint256 timestamp);
@@ -64,22 +65,22 @@ contract PNSRegistry{
         if (_registeredName == registry.name && account == registry.owner) {
             require(account == registry.owner, "Unauthorized party cannot transfer");
             registry.owner = recipient;
-            uint currentTimestamp = block.timestamp;
-            registry.updateDate = currentTimestamp;
+            // uint currentTimestamp = block.timestamp;
+            registry.updateDate = block.timestamp;
 
-            emit TransferName(account, recipient, _registeredName , currentTimestamp);
+            emit TransferName(account, recipient, _registeredName , block.timestamp);
 
             return true;
         } else {
             return false;
         }
     }
-    function renew(address account, bytes32 _registeredName, uint256 timestamp) public returns(bool){
+    function renew(address account, bytes32 _registeredName) public returns(bool){
         if (_registeredName == registry.name) {
             require(account == registry.owner, "Unauthorized party cannot renew");
-            registry.updateDate = timestamp;
+            registry.updateDate = block.timestamp;
 
-            emit RenewName(account, _registeredName , timestamp);
+            emit RenewName(account, _registeredName , block.timestamp);
 
             return true;   
         } else {
@@ -89,11 +90,11 @@ contract PNSRegistry{
     function revoke(bytes32 _registeredName) public returns(bool){
         if (_registeredName == registry.name) {
             registry.active = false;
-            address owner = registry.owner;
-            uint currentTimestamp = block.timestamp;
-            registry.updateDate = currentTimestamp;
+            // address owner = registry.owner;
+            // uint currentTimestamp = block.timestamp;
+            registry.updateDate = block.timestamp;
 
-            emit RevokeName(owner, _registeredName , currentTimestamp);
+            emit RevokeName(registry.owner, _registeredName , block.timestamp);
             
             return true;   
         } else {
